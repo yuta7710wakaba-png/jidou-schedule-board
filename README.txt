@@ -1,24 +1,15 @@
-活動きりかえボード V4 完全更新版
+活動きりかえボード V5 完全更新版
+
+【更新方法】
+1. GitHubの jidou-schedule-board 内にある古いファイルをすべて削除
+2. このZIPを解凍
+3. 解凍した中のファイルをすべて、リポジトリの一番上へアップロード
+4. Commit changes
+5. Actionsが緑になった後、次のURLで確認
+
+https://yuta7710wakaba-png.github.io/jidou-schedule-board/?v=5
 
 【重要】
-GitHubリポジトリ内の古いファイルを削除してから、
-このフォルダ内のファイルをすべてアップロードしてください。
-
-アップロードするファイル
-- index.html
-- styles.css
-- app.js
-- meeting.webp
-- washroom.webp
-- lunch.webp
-- snack.webp
-- free-play.webp
-- nakayoshi.webp
-- goodbye.webp
-- .nojekyll
-
-すべて同じ階層（リポジトリの一番上）に置きます。
-imagesフォルダなどは作りません。
-
-反映確認URL
-https://yuta7710wakaba-png.github.io/jidou-schedule-board/?v=4
+・フォルダは作りません
+・全ファイルを同じ階層に置きます
+・README.txtはアップロードしなくても動作します

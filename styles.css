@@ -127,14 +127,14 @@ button{touch-action:manipulation}
 .side{
   min-height:0;
   display:grid;
-  grid-template-rows:minmax(0,1.42fr) minmax(0,1.08fr) auto;
+  grid-template-rows:minmax(0,1.28fr) minmax(0,1fr) auto;
   gap:1.35vmin;
 }
 .countdown{
   background:rgba(255,255,255,.58);
   position:relative;
   overflow:hidden;
-  padding:1.5vmin 1.8vmin;
+  padding:1.8vmin 2vmin;
   display:grid;
   grid-template-rows:auto 1fr;
 }
@@ -142,17 +142,17 @@ button{touch-action:manipulation}
 .next-main{
   min-height:0;
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(18vmin,.95fr);
+  grid-template-columns:minmax(0,.9fr) minmax(20vmin,1.1fr);
   align-items:center;
-  gap:1.4vmin;
-  padding-top:1.5vmin;
+  gap:1.7vmin;
+  padding-top:2vmin;
 }
 .next-copy{align-self:center}
 .next-name{
-  font-size:3.05vmin;
+  font-size:3.4vmin;
   font-weight:950;
-  line-height:1.16;
-  margin-bottom:.8vmin;
+  line-height:1.15;
+  margin-bottom:1vmin;
 }
 .count-title{
   color:var(--sub);
@@ -171,9 +171,9 @@ button{touch-action:manipulation}
 .next-img{
   width:100%;
   height:100%;
-  max-height:18vh;
+  max-height:24vh;
   object-fit:contain;
-  filter:drop-shadow(0 .5vmin .7vmin rgba(60,70,70,.09));
+  filter:drop-shadow(0 .55vmin .75vmin rgba(60,70,70,.10));
 }
 .hidden-progress{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .track,.progress{fill:none;stroke-width:11}
@@ -183,7 +183,8 @@ button{touch-action:manipulation}
 
 
 .personal{
-  padding:1.1vmin 1.4vmin;
+  position:relative;
+  padding:1.5vmin 1.7vmin;
   background:rgba(239,235,255,.60);
   border-color:rgba(172,157,235,.42);
 }
@@ -204,21 +205,10 @@ button{touch-action:manipulation}
   font-size:1.55vmin;
   font-weight:900;
 }
-.ptimer{position:relative;width:min(9vw,13vh);aspect-ratio:1}
-.ptimer svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ptrack,.pprogress{fill:none;stroke-width:11}
-.ptrack{stroke:#d6cff5}
-.pprogress{stroke:var(--purple);stroke-linecap:round}
-.timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.timer-text{font-size:2.5vmin;font-weight:950}
-.timer-sub{font-size:.95vmin;font-weight:850;color:#5c518a}
-.preset,.pactions{display:grid;gap:.7vmin;margin-top:.75vmin}
-.preset{grid-template-columns:repeat(4,1fr)}
-.pactions{grid-template-columns:1.15fr 1fr}
-.preset button,.pactions button{
-  border:0;border-radius:.85vmin;padding:.72vmin;
-  background:#fff;color:#57479b;font-size:1.05vmin;font-weight:950;
-  box-shadow:0 .25vmin .55vmin rgba(60,50,110,.08);
+.ptimer{
+  position:relative;
+  width:min(11vw,16vh);
+  aspect-ratio:1;
 }
 .preset button.active,.pactions .start{background:var(--purple);color:#fff}
 
@@ -289,20 +279,21 @@ dialog select,dialog input[type=time]{padding:11px;border:1px solid #cbd9df;bord
   .main-time{font-size:4.5vw}
   .personal-title{font-size:1.8vw}
   .personal input{font-size:2vw}
-  .timer-text{font-size:3vw}
-  .preset button,.pactions button,.controls button{font-size:1.55vw}
+  .timer-text{
+  font-size:3vmin;
+  font-weight:950;
 }
 
 .next-visual-wrap{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 10.5vmin;
+  grid-template-columns:minmax(0,1fr) 13vmin;
   align-items:center;
-  gap:1vmin;
+  gap:1.2vmin;
   min-width:0;
 }
 .next-timer{
   position:relative;
-  width:10.5vmin;
+  width:13vmin;
   aspect-ratio:1;
 }
 .next-timer svg{
@@ -319,7 +310,7 @@ dialog select,dialog input[type=time]{padding:11px;border:1px solid #cbd9df;bord
   justify-content:center;
 }
 .next-timer-text{
-  font-size:1.65vmin;
+  font-size:2vmin;
   font-weight:950;
   color:#e75f67;
 }
@@ -407,4 +398,27 @@ dialog select,dialog input[type=time]{padding:11px;border:1px solid #cbd9df;bord
   background:#2e8fc9;
   color:#fff;
   font-weight:900;
+}
+
+
+/* V5.2: 右側を2段構成に整理 */
+@media (orientation:portrait){
+  .side{
+    grid-template-rows:minmax(0,1.25fr) minmax(0,1fr) auto;
+  }
+  .next-main{
+    grid-template-columns:minmax(0,.9fr) minmax(21vw,1.1fr);
+  }
+  .next-visual-wrap{
+    grid-template-columns:minmax(0,1fr) 14vw;
+  }
+  .next-timer{
+    width:14vw;
+  }
+  .next-timer-text{
+    font-size:2.25vw;
+  }
+  .ptimer{
+    width:min(13vw,15vh);
+  }
 }

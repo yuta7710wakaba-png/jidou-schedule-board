@@ -72,7 +72,7 @@ function eventKey(){
   return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}_${state.nextStart||"unset"}_${state.nextId}`;
 }
 function setImage(el,a){
-  el.src=`./${a.image}?v=5.1.0`;
+  el.src=`./${a.image}?v=5.2.0`;
   el.alt=a.name;
 }
 function populate(){

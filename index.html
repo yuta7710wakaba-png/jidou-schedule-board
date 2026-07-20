@@ -3,114 +3,165 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#d9f2fb">
-  <title>かつどう きりかえボード V5</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#eef8fc">
+  <title>活動きりかえボード V5</title>
+  <link rel="stylesheet" href="./styles.css?v=5.0.0">
 </head>
 <body>
-  <main class="app-shell" aria-label="活動きりかえボード">
-    <header class="topbar">
-      <div class="clock-wrap" aria-label="現在日時"><span class="clock-icon">🕘</span><div class="clock-text"><span id="dateText" class="date-text">--月--日</span><time id="clock">--:--</time></div></div>
-      <div class="top-actions">
-        <button id="voiceBtn" class="icon-button" type="button" aria-label="音声読み上げ">🔊<span>おんせい</span></button>
-        <button id="fullscreenBtn" class="icon-button" type="button" aria-label="全画面表示">⛶<span>ぜんがめん</span></button>
-        <button id="settingsBtn" class="icon-button" type="button" aria-label="設定を開く">⚙<span>せってい</span></button>
+<main class="app">
+  <header class="header card">
+    <div class="datetime">
+      <div id="date" class="date"></div>
+      <div id="clock" class="clock">--:--</div>
+    </div>
+
+    <div class="actions">
+      <button id="soundBtn" class="btn sound">🔇 音を有効にする</button>
+      <button id="fullBtn" class="btn icon" aria-label="全画面">⛶</button>
+      <button id="settingsBtn" class="btn icon" aria-label="設定">⚙</button>
+    </div>
+  </header>
+
+  <section class="board">
+    <article class="current card">
+      <div class="bubble-label blue">いま</div>
+      <h1 id="currentName" class="current-name"></h1>
+      <div class="current-visual">
+        <img id="currentImg" class="current-img" alt="">
       </div>
-    </header>
+      <p id="message" class="message">たのしく すごそう</p>
+    </article>
 
-    <section class="board-grid">
-      <article class="panel current-panel">
-        <div class="panel-title-row">
-          <h1>いまのかつどう</h1>
-          <span id="currentPosition" class="position-badge">1 / 8</span>
+    <aside class="side">
+      <section class="countdown card">
+        <div class="bubble-label pink">つぎ</div>
+        <div class="next-main">
+          <div class="next-copy">
+            <div id="nextName" class="next-name"></div>
+            <div id="countTitle" class="count-title">10分前に おしらせします</div>
+            <div class="main-time-row">
+              <span class="clock-icon">◷</span>
+              <span id="mainText" class="main-time">--:--</span>
+            </div>
+            <div id="mainSub" class="main-sub">開始前</div>
+          </div>
+          <img id="nextImg" class="next-img" alt="">
         </div>
-        <div class="current-content">
-          <div class="activity-visual">
-            <img id="currentImage" src="meeting.webp" alt="現在の活動">
+        <svg class="hidden-progress" viewBox="0 0 140 140" aria-hidden="true">
+          <circle class="track" cx="70" cy="70" r="58"/>
+          <circle id="mainProgress" class="progress" cx="70" cy="70" r="58"/>
+        </svg>
+      </section>
+
+      <section class="following card">
+        <div class="following-copy">
+          <div class="following-label">そのつぎ</div>
+          <div id="followingName" class="following-name"></div>
+          <div id="followingTime" class="following-time"></div>
+        </div>
+        <img id="followingImg" class="following-img" alt="">
+      </section>
+
+      <section class="personal card">
+        <div class="personal-head">
+          <div class="personal-fields">
+            <div class="personal-title">こべつタイマー</div>
+            <input id="personalLabel" value="トイレ" aria-label="個別タイマー名">
           </div>
-          <div class="activity-info">
-            <p id="currentName" class="activity-name">あさのかい</p>
-            <div class="timer-card timer-card-large">
-              <div id="currentRing" class="timer-ring" style="--progress:0">
-                <div class="timer-center">
-                  <span id="currentTime" class="timer-time">10:00</span>
-                  <small>のこり</small>
-                </div>
-              </div>
-              <div class="timer-controls">
-                <button id="currentStartBtn" class="primary-button" type="button">▶ はじめる</button>
-                <button id="currentResetBtn" class="soft-button" type="button">↻ もどす</button>
-              </div>
+
+          <div class="ptimer">
+            <svg viewBox="0 0 140 140">
+              <circle class="ptrack" cx="70" cy="70" r="58"/>
+              <circle id="personalProgress" class="pprogress" cx="70" cy="70" r="58"/>
+            </svg>
+            <div class="timer-center">
+              <div id="personalText" class="timer-text">05:00</div>
+              <div class="timer-sub">あと</div>
             </div>
           </div>
         </div>
-      </article>
 
-      <aside class="side-column">
-        <article class="panel next-panel">
-          <h2>つぎのかつどう</h2>
-          <div class="next-content">
-            <div class="next-visual"><img id="nextImage" src="washroom.webp" alt="次の活動"></div>
-            <div class="next-info">
-              <p id="nextName" class="next-name">トイレ</p>
-              <div class="mini-timer-wrap">
-                <div id="nextRing" class="timer-ring timer-ring-small" style="--progress:0">
-                  <div class="timer-center"><span id="nextTime" class="timer-time">05:00</span><small>めやす</small></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
+        <div class="preset">
+          <button data-min="3">3分</button>
+          <button data-min="5" class="active">5分</button>
+          <button data-min="10">10分</button>
+          <button data-min="15">15分</button>
+        </div>
 
-        <article class="panel personal-panel">
-          <h2>こべつタイマー</h2>
-          <div class="personal-content">
-            <div id="personalRing" class="timer-ring personal-ring" style="--progress:0">
-              <div class="timer-center"><span id="personalTime" class="timer-time">05:00</span><small>のこり</small></div>
-            </div>
-            <div class="personal-controls">
-              <div class="quick-times" aria-label="時間を選ぶ">
-                <button type="button" data-minutes="1">1ぷん</button>
-                <button type="button" data-minutes="3">3ぷん</button>
-                <button type="button" data-minutes="5" class="selected">5ぷん</button>
-                <button type="button" data-minutes="10">10ぷん</button>
-              </div>
-              <button id="personalStartBtn" class="primary-button" type="button">▶ はじめる</button>
-              <button id="personalResetBtn" class="soft-button" type="button">↻ もどす</button>
-            </div>
-          </div>
-        </article>
-      </aside>
-    </section>
-  </main>
-
-  <dialog id="settingsDialog" class="settings-dialog">
-    <form method="dialog" class="settings-card">
-      <header class="settings-header">
-        <div><p class="eyebrow">V5</p><h2>せってい</h2></div>
-        <button class="close-button" value="close" aria-label="閉じる">×</button>
-      </header>
-
-      <section class="settings-section">
-        <div class="section-heading"><h3>きょうの じゅんばん</h3><p>↑ ↓ でならびかえ</p></div>
-        <div id="scheduleEditor" class="schedule-editor"></div>
+        <div class="pactions">
+          <button id="personalStart" class="start">スタート</button>
+          <button id="personalReset">リセット</button>
+        </div>
       </section>
 
-      <section class="settings-section settings-options">
-        <label class="switch-row"><span>じどうで よみあげる</span><input id="autoVoiceToggle" type="checkbox"><span class="switch"></span></label>
-        <label class="switch-row"><span>じかんがきたら つぎへ</span><input id="autoAdvanceToggle" type="checkbox"><span class="switch"></span></label>
+      <section class="controls">
+        <button id="stopSound">音を止める</button>
+        <button id="switchNow" class="primary">今すぐ切り替え</button>
       </section>
+    </aside>
+  </section>
+</main>
 
-      <section class="settings-section action-grid">
-        <button id="advanceBtn" type="button" class="primary-button">つぎのかつどうへ</button>
-        <button id="backBtn" type="button" class="soft-button">ひとつまえへ</button>
-        <button id="resetScheduleBtn" type="button" class="soft-button danger-soft">さいしょにもどる</button>
-        <button id="saveSettingsBtn" type="button" class="primary-button save-button">ほぞんする</button>
-      </section>
-    </form>
-  </dialog>
+<div id="transitionOverlay" class="overlay" hidden>
+  <div class="overlay-panel">
+    <h2>つぎの じかんです</h2>
+    <img id="overlayImg" alt="">
+    <strong id="overlayName"></strong>
+  </div>
+</div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js" defer></script>
+<div id="personalOverlay" class="poverlay" hidden>
+  <div class="personal-alert">
+    <h2>じかんです</h2>
+    <strong id="personalOverlayName"></strong>
+    <button id="closePersonal">とじる</button>
+  </div>
+</div>
+
+<dialog id="settingsDialog">
+  <form method="dialog">
+    <div class="dhead">
+      <h2>ボード設定</h2>
+      <button value="cancel" aria-label="閉じる">✕</button>
+    </div>
+
+    <label>いまの活動
+      <select id="currentSelect"></select>
+    </label>
+
+    <label>つぎの活動
+      <select id="nextSelect"></select>
+    </label>
+
+    <label>そのつぎの活動
+      <select id="followingSelect"></select>
+    </label>
+
+    <label>つぎの開始時間
+      <input id="nextStart" type="time">
+    </label>
+
+    <label>お知らせ開始
+      <select id="warningMinutes">
+        <option value="5">5分前</option>
+        <option value="10">10分前</option>
+        <option value="15">15分前</option>
+        <option value="20">20分前</option>
+      </select>
+    </label>
+
+    <label>音量
+      <input id="volume" type="range" min="0" max="100">
+    </label>
+
+    <div class="dialog-actions">
+      <button value="cancel">キャンセル</button>
+      <button id="saveSettings" class="save" value="default">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="./app.js?v=5.0.0" defer></script>
 </body>
 </html>

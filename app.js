@@ -1,85 +1,317 @@
-"use strict";
-
-const DEFAULT_ACTIVITIES = [
-  { id:"meeting", name:"あさのかい", image:"meeting.webp", minutes:10 },
-  { id:"washroom", name:"トイレ", image:"washroom.webp", minutes:5 },
-  { id:"activity", name:"かつどう", image:"activity.webp", minutes:30 },
-  { id:"lunch", name:"おひるごはん", image:"lunch.webp", minutes:30 },
-  { id:"snack", name:"おやつ", image:"snack.webp", minutes:15 },
-  { id:"free-play", name:"じゆうあそび", image:"free-play.webp", minutes:30 },
-  { id:"nakayoshi", name:"なかよしタイム", image:"nakayoshi.webp", minutes:20 },
-  { id:"goodbye", name:"かえりのかい", image:"goodbye.webp", minutes:10 }
+const activities = [
+  {id:"meeting",name:"あさ・おひるのかい",image:"meeting.png"},
+  {id:"washroom",name:"てあらい・トイレ",image:"washroom.png"},
+  {id:"lunch",name:"おひるごはん",image:"lunch.png"},
+  {id:"snack",name:"おやつ",image:"snack.png"},
+  {id:"free",name:"じゆうあそび",image:"free-play.png"},
+  {id:"nakayoshi",name:"なかよし",image:"nakayoshi.png"},
+  {id:"goodbye",name:"かえりのかい",image:"goodbye.png"}
 ];
 
-const STORAGE_KEY = "jidouScheduleBoardV5";
-const state = {
-  activities: structuredClone(DEFAULT_ACTIVITIES), currentIndex:0,
-  autoVoice:false, autoAdvance:false,
-  current:{total:600, remaining:600, running:false, interval:null},
-  personal:{total:300, remaining:300, running:false, interval:null}
+const KEY="jidouScheduleBoardV5";
+const defaults={
+  currentId:"meeting",
+  nextId:"washroom",
+  followingId:"lunch",
+  nextStart:"10:30",
+  warningMinutes:10,
+  volume:45,
+  sound:false,
+  personalLabel:"トイレ",
+  personalMinutes:5
 };
 
-const $ = (id) => document.getElementById(id);
-const els = {
-  clock:$("clock"), dateText:$("dateText"), currentImage:$("currentImage"), currentName:$("currentName"), currentPosition:$("currentPosition"),
-  currentRing:$("currentRing"), currentTime:$("currentTime"), currentStartBtn:$("currentStartBtn"), currentResetBtn:$("currentResetBtn"),
-  nextImage:$("nextImage"), nextName:$("nextName"), nextRing:$("nextRing"), nextTime:$("nextTime"),
-  personalRing:$("personalRing"), personalTime:$("personalTime"), personalStartBtn:$("personalStartBtn"), personalResetBtn:$("personalResetBtn"),
-  settingsDialog:$("settingsDialog"), scheduleEditor:$("scheduleEditor"), autoVoiceToggle:$("autoVoiceToggle"), autoAdvanceToggle:$("autoAdvanceToggle"), toast:$("toast")
+let state;
+try{
+  state={...defaults,...JSON.parse(localStorage.getItem(KEY)||"{}")};
+}catch{
+  state={...defaults};
+}
+
+const $=id=>document.getElementById(id);
+const r=58;
+const C=2*Math.PI*r;
+
+$("mainProgress").style.strokeDasharray=C;
+$("personalProgress").style.strokeDasharray=C;
+
+let audio=null;
+let oscillators=[];
+let personal={
+  duration:state.personalMinutes*60000,
+  remaining:state.personalMinutes*60000,
+  running:false,
+  endAt:0,
+  finished:false
+};
+let lastWarning="";
+let lastTransition="";
+
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(state));
+}
+function act(id){
+  return activities.find(a=>a.id===id)||activities[0];
+}
+function pad(n){
+  return String(n).padStart(2,"0");
+}
+function fmt(ms){
+  const s=Math.max(0,Math.ceil(ms/1000));
+  return `${pad(Math.floor(s/60))}:${pad(s%60)}`;
+}
+function targetToday(){
+  const [h,m]=state.nextStart.split(":").map(Number);
+  const d=new Date();
+  d.setHours(h,m,0,0);
+  return d;
+}
+function eventKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}_${state.nextStart}_${state.nextId}`;
+}
+function setImage(el,a){
+  el.src=`./${a.image}?v=5.0.0`;
+  el.alt=a.name;
+}
+function populate(){
+  const opts=activities.map(a=>`<option value="${a.id}">${a.name}</option>`).join("");
+  $("currentSelect").innerHTML=opts;
+  $("nextSelect").innerHTML=opts;
+  $("followingSelect").innerHTML=opts;
+}
+function render(){
+  const cur=act(state.currentId);
+  const next=act(state.nextId);
+  const following=act(state.followingId);
+
+  setImage($("currentImg"),cur);
+  $("currentName").textContent=cur.name;
+
+  setImage($("nextImg"),next);
+  $("nextName").textContent=next.name;
+
+  setImage($("followingImg"),following);
+  $("followingName").textContent=following.name;
+  $("followingTime").textContent="そのつぎ";
+
+  $("soundBtn").textContent=state.sound?"🔊 音は有効です":"🔇 音を有効にする";
+  $("personalLabel").value=state.personalLabel;
+}
+function renderClock(){
+  const d=new Date();
+  $("clock").textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  $("date").textContent=new Intl.DateTimeFormat("ja-JP",{
+    month:"long",day:"numeric",weekday:"short"
+  }).format(d);
+}
+function mainTimer(offset,text,sub){
+  $("mainProgress").style.strokeDashoffset=offset;
+  $("mainText").textContent=text;
+  $("mainSub").textContent=sub;
+}
+async function enableSound(){
+  audio ||= new (window.AudioContext||window.webkitAudioContext)();
+  await audio.resume();
+  state.sound=true;
+  save();
+  render();
+  tone(523,0,.16);
+}
+function tone(freq,delay,dur,type="sine"){
+  if(!state.sound||!audio)return;
+  const o=audio.createOscillator();
+  const g=audio.createGain();
+  const t=audio.currentTime+delay;
+  o.type=type;
+  o.frequency.value=freq;
+  const v=Math.max(.0002,(state.volume/100)*.14);
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(v,t+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g).connect(audio.destination);
+  o.start(t);
+  o.stop(t+dur+.03);
+  oscillators.push(o);
+  o.onended=()=>oscillators=oscillators.filter(x=>x!==o);
+}
+function warningSound(){
+  tone(660,0,.3);
+  tone(784,.34,.42);
+}
+function transitionSound(){
+  [523,659,784,1047,784,659].forEach((n,i)=>tone(n,i*.28,.38,i%2?"sine":"triangle"));
+}
+function personalSound(){
+  [659,784,988].forEach((n,i)=>tone(n,i*.25,.42));
+}
+function stopAudio(){
+  oscillators.forEach(o=>{try{o.stop()}catch{}});
+  oscillators=[];
+}
+function doTransition(){
+  transitionSound();
+  const next=act(state.nextId);
+  setImage($("overlayImg"),next);
+  $("overlayName").textContent=next.name;
+  $("transitionOverlay").hidden=false;
+
+  setTimeout(()=>{
+    $("transitionOverlay").hidden=true;
+    state.currentId=state.nextId;
+    state.nextId=state.followingId;
+    save();
+    render();
+    $("message").textContent="はじめよう";
+  },5500);
+}
+function tickMain(){
+  renderClock();
+
+  const diff=targetToday()-new Date();
+  const warn=state.warningMinutes*60000;
+  const key=eventKey();
+
+  if(diff>warn){
+    mainTimer(C,state.nextStart,"開始時間");
+    $("countTitle").textContent=state.warningMinutes+"分前に おしらせします";
+    $("message").textContent="たのしく すごそう";
+  }else if(diff>0){
+    const ratio=diff/warn;
+    mainTimer(C*(1-ratio),fmt(diff),"あと");
+    $("countTitle").textContent="つぎの じかんまで";
+    $("message").textContent="あと "+Math.ceil(diff/60000)+"ぷんで きりかえ";
+    if(lastWarning!==key){
+      lastWarning=key;
+      warningSound();
+    }
+  }else{
+    mainTimer(C,"00:00","じかんです");
+    if(lastTransition!==key){
+      lastTransition=key;
+      doTransition();
+    }
+  }
+}
+function setPersonal(min){
+  state.personalMinutes=min;
+  save();
+  personal={
+    duration:min*60000,
+    remaining:min*60000,
+    running:false,
+    endAt:0,
+    finished:false
+  };
+  document.querySelectorAll("[data-min]").forEach(b=>{
+    b.classList.toggle("active",Number(b.dataset.min)===min);
+  });
+  $("personalStart").textContent="スタート";
+  renderPersonal();
+}
+function renderPersonal(){
+  const ratio=personal.duration?personal.remaining/personal.duration:0;
+  $("personalProgress").style.strokeDashoffset=C*(1-ratio);
+  $("personalText").textContent=fmt(personal.remaining);
+}
+function tickPersonal(){
+  if(personal.running){
+    personal.remaining=Math.max(0,personal.endAt-Date.now());
+    if(personal.remaining<=0){
+      personal.running=false;
+      personal.finished=true;
+      $("personalStart").textContent="もういちど";
+      $("personalOverlayName").textContent=state.personalLabel||"じかん";
+      $("personalOverlay").hidden=false;
+      personalSound();
+    }
+  }
+  renderPersonal();
+}
+function openSettings(){
+  $("currentSelect").value=state.currentId;
+  $("nextSelect").value=state.nextId;
+  $("followingSelect").value=state.followingId;
+  $("nextStart").value=state.nextStart;
+  $("warningMinutes").value=state.warningMinutes;
+  $("volume").value=state.volume;
+  $("settingsDialog").showModal();
+}
+
+populate();
+render();
+setPersonal(state.personalMinutes);
+tickMain();
+
+setInterval(()=>{
+  tickMain();
+  tickPersonal();
+},500);
+
+$("soundBtn").onclick=enableSound;
+$("settingsBtn").onclick=openSettings;
+
+$("saveSettings").onclick=()=>{
+  state.currentId=$("currentSelect").value;
+  state.nextId=$("nextSelect").value;
+  state.followingId=$("followingSelect").value;
+  state.nextStart=$("nextStart").value;
+  state.warningMinutes=Number($("warningMinutes").value);
+  state.volume=Number($("volume").value);
+  lastWarning="";
+  lastTransition="";
+  save();
+  render();
+  tickMain();
 };
 
-function loadState(){
+$("switchNow").onclick=doTransition;
+$("stopSound").onclick=stopAudio;
+
+$("fullBtn").onclick=async()=>{
   try{
-    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if(saved?.activities?.length===8){state.activities=saved.activities;state.currentIndex=Math.min(saved.currentIndex||0,7);state.autoVoice=!!saved.autoVoice;state.autoAdvance=!!saved.autoAdvance;}
-  }catch(err){console.warn("保存データを読み込めませんでした",err)}
-}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify({activities:state.activities,currentIndex:state.currentIndex,autoVoice:state.autoVoice,autoAdvance:state.autoAdvance}))}
-function formatTime(sec){sec=Math.max(0,Math.ceil(sec));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`}
-function setRing(el,remaining,total){const progress=total<=0?0:Math.max(0,Math.min(100,(remaining/total)*100));el.style.setProperty("--progress",progress.toFixed(2))}
-function updateClock(){const now=new Date();els.clock.textContent=now.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});els.dateText.textContent=now.toLocaleDateString("ja-JP",{month:"long",day:"numeric",weekday:"short"})}
-function currentActivity(){return state.activities[state.currentIndex]}
-function nextActivity(){return state.activities[Math.min(state.currentIndex+1,state.activities.length-1)]}
-function resetCurrentTimer(){clearInterval(state.current.interval);const mins=Number(currentActivity().minutes)||1;state.current={total:mins*60,remaining:mins*60,running:false,interval:null};renderTimers()}
-function renderBoard(){
-  const cur=currentActivity(), next=nextActivity();
-  els.currentImage.src=cur.image;els.currentImage.alt=cur.name;els.currentName.textContent=cur.name;els.currentPosition.textContent=`${state.currentIndex+1} / ${state.activities.length}`;
-  els.nextImage.src=next.image;els.nextImage.alt=next.name;els.nextName.textContent=state.currentIndex===state.activities.length-1?"おしまい":next.name;
-  els.nextTime.textContent=state.currentIndex===state.activities.length-1?"--:--":formatTime((Number(next.minutes)||1)*60);
-  setRing(els.nextRing,state.currentIndex===state.activities.length-1?0:(Number(next.minutes)||1)*60,(Number(next.minutes)||1)*60);
-  resetCurrentTimer();
-}
-function renderTimers(){
-  els.currentTime.textContent=formatTime(state.current.remaining);setRing(els.currentRing,state.current.remaining,state.current.total);els.currentStartBtn.textContent=state.current.running?"⏸ とめる":"▶ はじめる";
-  els.personalTime.textContent=formatTime(state.personal.remaining);setRing(els.personalRing,state.personal.remaining,state.personal.total);els.personalStartBtn.textContent=state.personal.running?"⏸ とめる":"▶ はじめる";
-}
-function tickTimer(which,onDone){const timer=state[which];timer.remaining=Math.max(0,timer.remaining-1);renderTimers();if(timer.remaining<=0){clearInterval(timer.interval);timer.interval=null;timer.running=false;renderTimers();playChime();onDone?.()}}
-function toggleCurrent(){
-  const t=state.current;if(t.remaining<=0)resetCurrentTimer();t.running=!t.running;
-  if(t.running){t.interval=setInterval(()=>tickTimer("current",()=>{speak("じかんです。つぎのかつどうに きりかえましょう");if(state.autoAdvance)setTimeout(()=>advanceActivity(),1800)}),1000)}else{clearInterval(t.interval);t.interval=null}renderTimers()
-}
-function setPersonal(minutes){clearInterval(state.personal.interval);state.personal={total:minutes*60,remaining:minutes*60,running:false,interval:null};document.querySelectorAll("[data-minutes]").forEach(b=>b.classList.toggle("selected",Number(b.dataset.minutes)===minutes));renderTimers()}
-function togglePersonal(){const t=state.personal;if(t.remaining<=0)t.remaining=t.total;t.running=!t.running;if(t.running)t.interval=setInterval(()=>tickTimer("personal",()=>speak("こべつタイマーの じかんです")),1000);else{clearInterval(t.interval);t.interval=null}renderTimers()}
-function advanceActivity(){if(state.currentIndex<state.activities.length-1){state.currentIndex++;saveState();renderBoard();if(state.autoVoice)speak(`${currentActivity().name}を はじめます`);showToast("つぎのかつどうへ すすみました")}else showToast("きょうの かつどうは おしまいです")}
-function backActivity(){if(state.currentIndex>0){state.currentIndex--;saveState();renderBoard();showToast("ひとつまえに もどりました")}}
-function firstActivity(){state.currentIndex=0;saveState();renderBoard();showToast("さいしょに もどりました")}
-function speak(text){if(!("speechSynthesis" in window)){showToast("この端末では音声を使えません");return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="ja-JP";u.rate=.88;u.pitch=1.08;speechSynthesis.speak(u)}
-function playChime(){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();[523.25,659.25,783.99].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(.001,ctx.currentTime+i*.18);g.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+i*.18+.03);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+i*.18+.28);o.start(ctx.currentTime+i*.18);o.stop(ctx.currentTime+i*.18+.3)})}catch(e){console.warn(e)}}
-function showToast(msg){els.toast.textContent=msg;els.toast.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>els.toast.classList.remove("show"),1800)}
+    if(document.fullscreenElement){
+      await document.exitFullscreen();
+    }else{
+      await document.documentElement.requestFullscreen();
+    }
+  }catch{
+    alert("この端末では、ブラウザのメニューから「ホーム画面に追加」すると大きく表示できます。");
+  }
+};
 
-function renderEditor(){els.scheduleEditor.innerHTML="";state.activities.forEach((a,index)=>{const row=document.createElement("div");row.className="schedule-row";row.innerHTML=`<span>${index+1}</span><img src="${a.image}" alt=""><input type="text" value="${escapeHtml(a.name)}" aria-label="活動名"><label><input type="number" min="1" max="180" value="${a.minutes}" aria-label="時間（分）"> 分</label><div class="move-buttons"><button type="button" data-move="up" aria-label="上へ">↑</button><button type="button" data-move="down" aria-label="下へ">↓</button></div>`;row.querySelector('[data-move="up"]').disabled=index===0;row.querySelector('[data-move="down"]').disabled=index===state.activities.length-1;row.querySelector('[data-move="up"]').onclick=()=>moveActivity(index,-1);row.querySelector('[data-move="down"]').onclick=()=>moveActivity(index,1);els.scheduleEditor.appendChild(row)});els.autoVoiceToggle.checked=state.autoVoice;els.autoAdvanceToggle.checked=state.autoAdvance}
-function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function pullEditorValues(){[...els.scheduleEditor.children].forEach((row,i)=>{const inputs=row.querySelectorAll("input");state.activities[i].name=inputs[0].value.trim()||DEFAULT_ACTIVITIES[i].name;state.activities[i].minutes=Math.max(1,Math.min(180,Number(inputs[1].value)||1))})}
-function moveActivity(index,delta){pullEditorValues();const target=index+delta;[state.activities[index],state.activities[target]]=[state.activities[target],state.activities[index]];renderEditor()}
-function openSettings(){renderEditor();els.settingsDialog.showModal()}
-function saveSettings(){pullEditorValues();state.autoVoice=els.autoVoiceToggle.checked;state.autoAdvance=els.autoAdvanceToggle.checked;saveState();renderBoard();els.settingsDialog.close();showToast("せっていを ほぞんしました")}
-async function toggleFullscreen(){try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch{showToast("全画面表示を使えませんでした")}}
+document.querySelectorAll("[data-min]").forEach(b=>{
+  b.onclick=()=>setPersonal(Number(b.dataset.min));
+});
 
-loadState();updateClock();setInterval(updateClock,1000);renderBoard();setPersonal(5);
-$("currentStartBtn").addEventListener("click",toggleCurrent);$("currentResetBtn").addEventListener("click",resetCurrentTimer);
-$("personalStartBtn").addEventListener("click",togglePersonal);$("personalResetBtn").addEventListener("click",()=>setPersonal(state.personal.total/60));
-document.querySelectorAll("[data-minutes]").forEach(btn=>btn.addEventListener("click",()=>setPersonal(Number(btn.dataset.minutes))));
-$("voiceBtn").addEventListener("click",()=>speak(`いまは ${currentActivity().name}です。つぎは ${state.currentIndex===state.activities.length-1?"おしまい":nextActivity().name}です`));
-$("fullscreenBtn").addEventListener("click",toggleFullscreen);$("settingsBtn").addEventListener("click",openSettings);
-$("advanceBtn").addEventListener("click",()=>{pullEditorValues();advanceActivity();renderEditor()});$("backBtn").addEventListener("click",()=>{pullEditorValues();backActivity();renderEditor()});$("resetScheduleBtn").addEventListener("click",()=>{pullEditorValues();firstActivity();renderEditor()});$("saveSettingsBtn").addEventListener("click",saveSettings);
-els.settingsDialog.addEventListener("click",e=>{if(e.target===els.settingsDialog)els.settingsDialog.close()});
+$("personalStart").onclick=()=>{
+  if(personal.finished){
+    setPersonal(state.personalMinutes);
+    return;
+  }
+  if(personal.running){
+    personal.remaining=Math.max(0,personal.endAt-Date.now());
+    personal.running=false;
+    $("personalStart").textContent="つづける";
+  }else{
+    personal.endAt=Date.now()+personal.remaining;
+    personal.running=true;
+    $("personalStart").textContent="いったん とめる";
+  }
+};
+
+$("personalReset").onclick=()=>setPersonal(state.personalMinutes);
+
+$("personalLabel").oninput=()=>{
+  state.personalLabel=$("personalLabel").value.trim()||"じかん";
+  save();
+};
+
+$("closePersonal").onclick=()=>{
+  $("personalOverlay").hidden=true;
+};
+
+window.addEventListener("focus",()=>{
+  tickMain();
+  tickPersonal();
+});

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#dff4ff">
+<title>活動きりかえボード V6</title>
+<link rel="stylesheet" href="styles.css?v=6.0.0">
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><span>☁</span><div><h1>活動きりかえボード</h1><p id="todayLabel">--月--日</p></div></div>
+  <div class="actions">
+    <div class="clock" id="clockText">--:--</div>
+    <button id="soundBtn" type="button">🔊</button>
+    <button id="fullscreenBtn" type="button">⛶</button>
+    <button id="settingsBtn" type="button">⚙</button>
+  </div>
+</header>
+
+<main class="board">
+  <section class="card current-card">
+    <div class="title"><span class="dot blue"></span><h2>いま</h2></div>
+    <div class="current-body">
+      <img id="currentImg" class="current-img" alt="">
+      <div class="current-info">
+        <div id="currentName" class="current-name"></div>
+        <div id="message" class="message">たのしく すごそう</div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <section class="card next-card">
+      <div class="title"><span class="dot orange"></span><h2>つぎ</h2></div>
+      <div class="next-body">
+        <div class="next-activity">
+          <img id="nextImg" class="next-img" alt="">
+          <div id="nextName" class="next-name"></div>
+        </div>
+        <div class="visual-timer">
+          <svg viewBox="0 0 120 120">
+            <circle class="track" cx="60" cy="60" r="50"/>
+            <circle id="mainProgress" class="progress" cx="60" cy="60" r="50"/>
+          </svg>
+          <div class="timer-center"><div id="mainText">--:--</div><small id="mainSub">開始時間</small></div>
+        </div>
+      </div>
+      <div id="countTitle" class="count-title">設定から次の時間を選んでください</div>
+    </section>
+
+    <section class="card personal-card">
+      <div class="title"><span class="dot purple"></span><h2>こべつタイマー</h2></div>
+      <div class="personal-body">
+        <div class="personal-timer">
+          <svg viewBox="0 0 120 120">
+            <circle class="track" cx="60" cy="60" r="50"/>
+            <circle id="personalProgress" class="personal-progress" cx="60" cy="60" r="50"/>
+          </svg>
+          <div id="personalText" class="personal-text">05:00</div>
+        </div>
+        <div class="personal-controls">
+          <div class="presets">
+            <button data-minutes="1" type="button">1分</button>
+            <button data-minutes="3" type="button">3分</button>
+            <button data-minutes="5" type="button">5分</button>
+            <button data-minutes="10" type="button">10分</button>
+          </div>
+          <div class="controls">
+            <button id="personalStart" class="primary" type="button">スタート</button>
+            <button id="personalReset" type="button">リセット</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </aside>
+</main>
+</div>
+
+<div id="transitionOverlay" class="overlay" hidden>
+  <div class="overlay-card">
+    <div class="overlay-title">つぎの じかんです</div>
+    <img id="overlayImg" alt="">
+    <div id="overlayName" class="overlay-name"></div>
+  </div>
+</div>
+
+<dialog id="settingsDialog">
+<form id="settingsForm" method="dialog">
+  <div class="dialog-head"><h2>せってい</h2><button id="closeSettings" type="button">×</button></div>
+  <label>いまの活動<select id="currentSelect"></select></label>
+  <label>つぎの活動<select id="nextSelect"></select></label>
+  <label>つぎの開始時間<input id="nextStart" type="time"></label>
+  <label>お知らせ<select id="warningMinutes"><option value="1">1分前</option><option value="3">3分前</option><option value="5">5分前</option><option value="10">10分前</option></select></label>
+  <label>音量<input id="volume" type="range" min="0" max="100"></label>
+  <div class="sound-test"><span>音の確認</span><button id="testSound" type="button">🔊 テスト再生</button></div>
+  <button class="save" type="submit">保存する</button>
+</form>
+</dialog>
+<script src="app.js?v=6.0.0"></script>
+</body>
+</html>

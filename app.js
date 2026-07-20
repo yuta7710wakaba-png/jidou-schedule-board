@@ -45,6 +45,7 @@ let personal={
 };
 let lastWarning="";
 let lastTransition="";
+let transitionRunning=false;
 
 function save(){
   localStorage.setItem(KEY,JSON.stringify(state));
@@ -60,6 +61,7 @@ function fmt(ms){
   return `${pad(Math.floor(s/60))}:${pad(s%60)}`;
 }
 function targetToday(){
+  if(!state.nextStart)return null;
   const [h,m]=state.nextStart.split(":").map(Number);
   const d=new Date();
   d.setHours(h,m,0,0);
@@ -67,10 +69,10 @@ function targetToday(){
 }
 function eventKey(){
   const d=new Date();
-  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}_${state.nextStart}_${state.nextId}`;
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}_${state.nextStart||"unset"}_${state.nextId}`;
 }
 function setImage(el,a){
-  el.src=`./${a.image}?v=5.0.0`;
+  el.src=`./${a.image}?v=5.1.0`;
   el.alt=a.name;
 }
 function populate(){
@@ -143,6 +145,9 @@ function stopAudio(){
   oscillators=[];
 }
 function doTransition(){
+  if(transitionRunning)return;
+  transitionRunning=true;
+
   transitionSound();
   const next=act(state.nextId);
   setImage($("overlayImg"),next);
@@ -154,15 +159,34 @@ function doTransition(){
     state.currentId=state.nextId;
     const currentIndex=activities.findIndex(a=>a.id===state.nextId);
     state.nextId=activities[(currentIndex+1)%activities.length].id;
+
+    // 自動切替後は次回時刻を未設定状態に戻し、
+    // 同じ過去時刻で再び切り替わらないようにする
+    state.nextStart="";
     save();
     render();
+
+    $("mainText").textContent="--:--";
+    $("nextTimerText").textContent="--:--";
+    $("mainSub").textContent="開始時間を設定";
+    $("countTitle").textContent="設定から次の時間を選んでください";
+    $("mainProgress").style.strokeDashoffset=C;
     $("message").textContent="はじめよう";
+
+    transitionRunning=false;
   },5500);
 }
 function tickMain(){
   renderClock();
 
-  const diff=targetToday()-new Date();
+  const target=targetToday();
+  if(!target){
+    mainTimer(C,"--:--","開始時間を設定");
+    $("countTitle").textContent="設定から次の時間を選んでください";
+    return;
+  }
+
+  const diff=target-new Date();
   const warn=state.warningMinutes*60000;
   const key=eventKey();
 
@@ -181,7 +205,7 @@ function tickMain(){
     }
   }else{
     mainTimer(C,"00:00","じかんです");
-    if(lastTransition!==key){
+    if(lastTransition!==key && !transitionRunning){
       lastTransition=key;
       doTransition();
     }
@@ -242,6 +266,12 @@ setInterval(()=>{
 },500);
 
 $("soundBtn").onclick=enableSound;
+
+$("testSound").onclick=async()=>{
+  await enableSound();
+  warningSound();
+};
+
 $("settingsBtn").onclick=openSettings;
 
 $("saveSettings").onclick=()=>{

@@ -332,3 +332,79 @@ dialog select,dialog input[type=time]{padding:11px;border:1px solid #cbd9df;bord
   .next-timer{width:12vw}
   .next-timer-text{font-size:2vw}
 }
+
+
+/* V5.1: カード内の余白を埋める控えめな装飾 */
+.current::after,
+.countdown::after,
+.personal::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(255,198,205,.42) 0 0.42vmin, transparent .48vmin),
+    radial-gradient(circle at 88% 15%, rgba(174,224,247,.44) 0 0.55vmin, transparent .62vmin),
+    radial-gradient(circle at 92% 82%, rgba(183,231,197,.36) 0 0.48vmin, transparent .55vmin),
+    radial-gradient(circle at 12% 84%, rgba(255,222,135,.42) 0 0.5vmin, transparent .58vmin);
+  opacity:.9;
+}
+.current::before{
+  content:"";
+  position:absolute;
+  right:2.2vmin;
+  top:2.4vmin;
+  width:5.5vmin;
+  height:3vmin;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 28% 68%, rgba(192,229,247,.48) 0 1.15vmin, transparent 1.22vmin),
+    radial-gradient(circle at 56% 43%, rgba(192,229,247,.48) 0 1.42vmin, transparent 1.49vmin),
+    radial-gradient(circle at 77% 69%, rgba(192,229,247,.48) 0 1.05vmin, transparent 1.12vmin);
+  pointer-events:none;
+}
+.countdown::before{
+  content:"✿";
+  position:absolute;
+  right:1.5vmin;
+  top:1.1vmin;
+  font-size:2.1vmin;
+  color:rgba(250,194,84,.62);
+  transform:rotate(12deg);
+  pointer-events:none;
+}
+.personal::before{
+  content:"★";
+  position:absolute;
+  right:1.3vmin;
+  top:1vmin;
+  font-size:1.7vmin;
+  color:rgba(132,114,223,.32);
+  pointer-events:none;
+}
+.current > *,
+.countdown > *,
+.personal > *{
+  position:relative;
+  z-index:1;
+}
+
+.sound-test-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f2f8fb;
+  font-weight:850;
+}
+.sound-test-row button{
+  border:0;
+  border-radius:9px;
+  padding:9px 14px;
+  background:#2e8fc9;
+  color:#fff;
+  font-weight:900;
+}

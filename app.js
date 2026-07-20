@@ -12,7 +12,6 @@ const KEY="jidouScheduleBoardV5";
 const defaults={
   currentId:"meeting",
   nextId:"washroom",
-  followingId:"lunch",
   nextStart:"10:30",
   warningMinutes:10,
   volume:45,
@@ -78,22 +77,15 @@ function populate(){
   const opts=activities.map(a=>`<option value="${a.id}">${a.name}</option>`).join("");
   $("currentSelect").innerHTML=opts;
   $("nextSelect").innerHTML=opts;
-  $("followingSelect").innerHTML=opts;
 }
 function render(){
   const cur=act(state.currentId);
   const next=act(state.nextId);
-  const following=act(state.followingId);
-
   setImage($("currentImg"),cur);
   $("currentName").textContent=cur.name;
 
   setImage($("nextImg"),next);
   $("nextName").textContent=next.name;
-
-  setImage($("followingImg"),following);
-  $("followingName").textContent=following.name;
-  $("followingTime").textContent="そのつぎ";
 
   $("soundBtn").textContent=state.sound?"🔊 音は有効です":"🔇 音を有効にする";
   $("personalLabel").value=state.personalLabel;
@@ -109,6 +101,7 @@ function mainTimer(offset,text,sub){
   $("mainProgress").style.strokeDashoffset=offset;
   $("mainText").textContent=text;
   $("mainSub").textContent=sub;
+  $("nextTimerText").textContent=text;
 }
 async function enableSound(){
   audio ||= new (window.AudioContext||window.webkitAudioContext)();
@@ -159,7 +152,8 @@ function doTransition(){
   setTimeout(()=>{
     $("transitionOverlay").hidden=true;
     state.currentId=state.nextId;
-    state.nextId=state.followingId;
+    const currentIndex=activities.findIndex(a=>a.id===state.nextId);
+    state.nextId=activities[(currentIndex+1)%activities.length].id;
     save();
     render();
     $("message").textContent="はじめよう";
@@ -231,7 +225,6 @@ function tickPersonal(){
 function openSettings(){
   $("currentSelect").value=state.currentId;
   $("nextSelect").value=state.nextId;
-  $("followingSelect").value=state.followingId;
   $("nextStart").value=state.nextStart;
   $("warningMinutes").value=state.warningMinutes;
   $("volume").value=state.volume;
@@ -254,7 +247,6 @@ $("settingsBtn").onclick=openSettings;
 $("saveSettings").onclick=()=>{
   state.currentId=$("currentSelect").value;
   state.nextId=$("nextSelect").value;
-  state.followingId=$("followingSelect").value;
   state.nextStart=$("nextStart").value;
   state.warningMinutes=Number($("warningMinutes").value);
   state.volume=Number($("volume").value);

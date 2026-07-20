@@ -46,21 +46,20 @@
             </div>
             <div id="mainSub" class="main-sub">開始前</div>
           </div>
-          <img id="nextImg" class="next-img" alt="">
+          <div class="next-visual-wrap">
+            <img id="nextImg" class="next-img" alt="">
+            <div class="next-timer">
+              <svg viewBox="0 0 140 140" aria-hidden="true">
+                <circle class="track" cx="70" cy="70" r="58"/>
+                <circle id="mainProgress" class="progress" cx="70" cy="70" r="58"/>
+              </svg>
+              <div class="next-timer-center">
+                <div id="nextTimerText" class="next-timer-text">--:--</div>
+                <div class="next-timer-sub">あと</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <svg class="hidden-progress" viewBox="0 0 140 140" aria-hidden="true">
-          <circle class="track" cx="70" cy="70" r="58"/>
-          <circle id="mainProgress" class="progress" cx="70" cy="70" r="58"/>
-        </svg>
-      </section>
-
-      <section class="following card">
-        <div class="following-copy">
-          <div class="following-label">そのつぎ</div>
-          <div id="followingName" class="following-name"></div>
-          <div id="followingTime" class="following-time"></div>
-        </div>
-        <img id="followingImg" class="following-img" alt="">
       </section>
 
       <section class="personal card">
@@ -132,10 +131,6 @@
 
     <label>つぎの活動
       <select id="nextSelect"></select>
-    </label>
-
-    <label>そのつぎの活動
-      <select id="followingSelect"></select>
     </label>
 
     <label>つぎの開始時間

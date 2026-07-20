@@ -1,20 +1,24 @@
-活動きりかえボード V2
+活動きりかえボード V4 完全更新版
 
-追加内容
-- 生成した活動イラストを反映
-- 「かえりのかい」を追加
-- 紫色の個別ビジュアルタイマーを追加
-- 個別タイマーは3分・5分・10分・15分から選択可能
-- 「トイレ」などの目的を直接入力可能
-- 個別タイマー終了時は音と全画面のお知らせ
+【重要】
+GitHubリポジトリ内の古いファイルを削除してから、
+このフォルダ内のファイルをすべてアップロードしてください。
 
-GitHub Pages更新方法
-1. このZIPを解凍します。
-2. リポジトリ内の旧ファイルをV2の内容で置き換えます。
-3. index.html、styles.css、app.js、imagesフォルダをアップロードします。
-4. Commit changesを押します。
-5. 数分後、同じGitHub Pages URLに反映されます。
+アップロードするファイル
+- index.html
+- styles.css
+- app.js
+- meeting.webp
+- washroom.webp
+- lunch.webp
+- snack.webp
+- free-play.webp
+- nakayoshi.webp
+- goodbye.webp
+- .nojekyll
 
-注意
-- 音を自動で鳴らすには、画面上部の「音を有効にする」を一度押してください。
-- お昼ご飯の画像のみ、一覧画像から切り出した仮画像です。独立画像を再生成後、images/lunch.webpだけ差し替えられます。
+すべて同じ階層（リポジトリの一番上）に置きます。
+imagesフォルダなどは作りません。
+
+反映確認URL
+https://yuta7710wakaba-png.github.io/jidou-schedule-board/?v=4

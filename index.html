@@ -25,7 +25,9 @@
     <section class="board">
       <article class="current-card">
         <div class="section-label">いま</div>
-        <div id="currentVisual" class="activity-visual" aria-hidden="true">🧸</div>
+        <div class="activity-image-wrap">
+          <img id="currentVisual" class="activity-image" src="./images/free.webp" alt="自由遊び">
+        </div>
         <h1 id="currentName" class="current-name">じゆうあそび</h1>
         <p id="statusMessage" class="status-message">たのしく すごそう</p>
       </article>
@@ -33,7 +35,7 @@
       <aside class="side-panel">
         <section id="countdownCard" class="countdown-card waiting">
           <div id="countdownTitle" class="countdown-title">つぎの じかんまで</div>
-          <div class="timer-shell">
+          <div class="timer-shell main-timer-shell">
             <svg class="timer-svg" viewBox="0 0 140 140" aria-hidden="true">
               <circle class="timer-track" cx="70" cy="70" r="58"></circle>
               <circle id="timerProgress" class="timer-progress" cx="70" cy="70" r="58"></circle>
@@ -48,11 +50,40 @@
         <section class="next-card">
           <div class="section-label">つぎ</div>
           <div class="next-row">
-            <div id="nextVisual" class="next-visual" aria-hidden="true">👋</div>
+            <img id="nextVisual" class="next-image" src="./images/meeting.webp" alt="朝・お昼の会">
             <div>
-              <div id="nextName" class="next-name">あさのかい</div>
+              <div id="nextName" class="next-name">あさ・おひるのかい</div>
               <div id="nextTime" class="next-time">10:30から</div>
             </div>
+          </div>
+        </section>
+
+        <section id="personalTimerCard" class="personal-timer-card">
+          <div class="personal-head">
+            <div>
+              <div class="personal-label">こべつタイマー</div>
+              <input id="personalLabel" class="personal-label-input" type="text" maxlength="12" value="トイレ" aria-label="個別タイマーの内容">
+            </div>
+            <div class="personal-timer-shell">
+              <svg class="timer-svg" viewBox="0 0 140 140" aria-hidden="true">
+                <circle class="personal-track" cx="70" cy="70" r="58"></circle>
+                <circle id="personalProgress" class="personal-progress" cx="70" cy="70" r="58"></circle>
+              </svg>
+              <div class="timer-center">
+                <div id="personalTimerText" class="personal-timer-text">05:00</div>
+                <div id="personalTimerSubtext" class="personal-timer-subtext">あと</div>
+              </div>
+            </div>
+          </div>
+          <div class="personal-presets" aria-label="時間を選ぶ">
+            <button type="button" data-minutes="3">3分</button>
+            <button type="button" data-minutes="5" class="selected">5分</button>
+            <button type="button" data-minutes="10">10分</button>
+            <button type="button" data-minutes="15">15分</button>
+          </div>
+          <div class="personal-actions">
+            <button id="personalStartButton" type="button" class="personal-start">スタート</button>
+            <button id="personalResetButton" type="button">リセット</button>
           </div>
         </section>
 
@@ -67,8 +98,16 @@
   <div id="transitionOverlay" class="transition-overlay" hidden>
     <div class="overlay-inner">
       <div class="overlay-title">じかんです</div>
-      <div id="overlayVisual" class="overlay-visual">👋</div>
-      <div id="overlayName" class="overlay-name">あさのかい</div>
+      <img id="overlayVisual" class="overlay-image" src="./images/meeting.webp" alt="">
+      <div id="overlayName" class="overlay-name">あさ・おひるのかい</div>
+    </div>
+  </div>
+
+  <div id="personalOverlay" class="personal-overlay" hidden>
+    <div class="personal-overlay-inner">
+      <div class="personal-overlay-title">じかんです</div>
+      <div id="personalOverlayName" class="personal-overlay-name">トイレ</div>
+      <button id="closePersonalOverlay" type="button">とじる</button>
     </div>
   </div>
 
@@ -78,41 +117,21 @@
         <h2>表示設定</h2>
         <button class="close-button" value="cancel" aria-label="閉じる">×</button>
       </div>
-
-      <label>
-        現在の活動
-        <select id="currentSelect"></select>
-      </label>
-
-      <label>
-        次の活動
-        <select id="nextSelect"></select>
-      </label>
-
-      <label>
-        次の活動の開始時間
-        <input id="nextStartTime" type="time" required>
-      </label>
-
-      <label>
-        予告タイマー
+      <label>現在の活動<select id="currentSelect"></select></label>
+      <label>次の活動<select id="nextSelect"></select></label>
+      <label>次の活動の開始時間<input id="nextStartTime" type="time" required></label>
+      <label>予告タイマー
         <select id="warningMinutes">
           <option value="5">5分前</option>
           <option value="10" selected>10分前</option>
           <option value="15">15分前</option>
         </select>
       </label>
-
-      <label>
-        音量
-        <input id="volumeRange" type="range" min="0" max="100" value="40">
-      </label>
-
+      <label>音量<input id="volumeRange" type="range" min="0" max="100" value="40"></label>
       <div class="preview-buttons">
         <button id="previewWarning" type="button">予告音を確認</button>
         <button id="previewTransition" type="button">切替音を確認</button>
       </div>
-
       <div class="dialog-actions">
         <button value="cancel" class="secondary">キャンセル</button>
         <button id="saveSettings" value="default" class="save-button">設定して開始</button>

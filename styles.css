@@ -1,0 +1,31 @@
+:root{
+  --bg:#edf5f8;
+  --panel:#ffffff;
+  --text:#24333c;
+  --muted:#6a7c86;
+  --line:#d6e3e9;
+  --blue:#328bc5;
+  --blue-soft:#dff2ff;
+  --orange:#f2a63b;
+  --orange-soft:#fff2d9;
+  --green:#50a96b;
+  --shadow:0 1.2vw 2.5vw rgba(35,65,82,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;background:#1d2a31;color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{width:100vw;height:100vh;padding:1.2vw;background:var(--bg);display:grid;grid-template-rows:auto 1fr;gap:1vw}
+.topbar{height:10vh;display:flex;justify-content:space-between;align-items:center;padding:0 1.1vw;background:var(--panel);border:.14vw solid var(--line);border-radius:1.3vw;box-shadow:var(--shadow)}
+.date{font-size:1.25vw;color:var(--muted);font-weight:700}.clock{font-size:3.1vw;line-height:1;font-weight:900;letter-spacing:.05em}
+.top-actions{display:flex;align-items:center;gap:.7vw}.pill-button,.icon-button{border:0;border-radius:1vw;background:var(--blue-soft);color:#174b69;font-weight:800}.pill-button{padding:.8vw 1.2vw;font-size:1.15vw}.sound-off{background:#f2f4f5;color:#53636b}.icon-button{width:4vw;height:4vw;font-size:2vw}
+.board{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(390px,1fr);gap:1vw;min-height:0}
+.current-card,.countdown-card,.next-card,.control-card{background:var(--panel);border:.14vw solid var(--line);border-radius:1.6vw;box-shadow:var(--shadow)}
+.current-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vw;position:relative;overflow:hidden}.current-card:before{content:"";position:absolute;width:33vw;height:33vw;border-radius:50%;background:var(--blue-soft);opacity:.65;z-index:0}.current-card>*{position:relative;z-index:1}
+.section-label{font-size:1.6vw;font-weight:900;color:var(--blue);letter-spacing:.12em}.activity-visual{font-size:16vw;line-height:1;margin:1vh 0;filter:drop-shadow(0 .5vw .5vw rgba(0,0,0,.12))}.current-name{font-size:5vw;margin:.3vh 0;font-weight:900;letter-spacing:.08em}.status-message{font-size:1.6vw;color:var(--muted);font-weight:700;margin:.5vh 0}
+.side-panel{display:grid;grid-template-rows:minmax(0,1.35fr) minmax(0,.75fr) auto;gap:1vw;min-height:0}.countdown-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1vw}.countdown-title{font-size:1.35vw;font-weight:900;color:var(--muted);margin-bottom:.4vh}.timer-shell{position:relative;width:min(21vw,34vh);aspect-ratio:1}.timer-svg{width:100%;height:100%;transform:rotate(-90deg)}.timer-track,.timer-progress{fill:none;stroke-width:11}.timer-track{stroke:#e7eef1}.timer-progress{stroke:var(--orange);stroke-linecap:round;transition:stroke-dashoffset .5s linear}.timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.timer-text{font-size:3.1vw;font-weight:900}.timer-subtext{font-size:1.1vw;color:var(--muted);font-weight:800}.waiting .timer-progress{stroke:#b9cbd3}.active-warning{background:var(--orange-soft);border-color:#f5c470}.active-warning .countdown-title{color:#9b650e}.active-warning .timer-text{color:#9b650e}
+.next-card{padding:1.2vw 1.5vw;display:flex;flex-direction:column;justify-content:center}.next-row{display:flex;align-items:center;gap:1vw;margin-top:.5vh}.next-visual{width:7.5vw;height:7.5vw;border-radius:1.4vw;background:#f2f7fa;display:flex;align-items:center;justify-content:center;font-size:5vw}.next-name{font-size:2.45vw;font-weight:900}.next-time{font-size:1.4vw;color:var(--muted);font-weight:800;margin-top:.4vh}.control-card{padding:.8vw;display:grid;grid-template-columns:1fr 1fr;gap:.7vw}.control-button{border:0;border-radius:1vw;padding:1vw;font-size:1.05vw;font-weight:900;background:#edf2f4;color:#40545e}.control-button.primary{background:var(--blue);color:#fff}
+.transition-overlay{position:fixed;inset:0;background:rgba(237,245,248,.98);z-index:20}.overlay-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}.overlay-title{font-size:4vw;font-weight:900;color:var(--orange);animation:pulse 1s infinite alternate}.overlay-visual{font-size:20vw;line-height:1;margin:2vh}.overlay-name{font-size:6vw;font-weight:900}@keyframes pulse{from{transform:scale(.96)}to{transform:scale(1.04)}}
+.settings-dialog{width:min(620px,90vw);border:0;border-radius:24px;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.28)}.settings-dialog::backdrop{background:rgba(18,31,38,.62)}.settings-dialog form{padding:24px;display:grid;gap:16px}.dialog-header{display:flex;justify-content:space-between;align-items:center}.dialog-header h2{margin:0;font-size:28px}.close-button{border:0;background:#eef2f4;border-radius:50%;width:40px;height:40px;font-size:26px}.settings-dialog label{display:grid;gap:7px;font-weight:800;color:#42545d}.settings-dialog select,.settings-dialog input[type=time]{width:100%;border:1px solid #cbd9df;border-radius:12px;padding:12px;background:#fff}.settings-dialog input[type=range]{width:100%}.preview-buttons,.dialog-actions{display:flex;gap:10px}.preview-buttons button,.dialog-actions button{flex:1;border:0;border-radius:12px;padding:13px;font-weight:900}.preview-buttons button,.secondary{background:#edf2f4}.save-button{background:var(--blue);color:#fff}
+@media (max-aspect-ratio:4/3){.board{grid-template-columns:1.6fr 1fr}.activity-visual{font-size:14vw}.current-name{font-size:4vw}}

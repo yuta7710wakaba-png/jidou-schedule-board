@@ -11,8 +11,8 @@ const activities=[
 const $=id=>document.getElementById(id),C=2*Math.PI*50,KEY="jidouScheduleBoardV7";
 const defaults={currentId:"meeting",nextId:"washroom",nextStart:"",warningMinutes:5,volume:60};
 let state=load(),audio=null,transitionKey="",transitionRunning=false;
-const activitySound=new Audio("activity-change.wav?v=7.0.0");
-const personalSound=new Audio("personal-alarm.wav?v=7.0.0");
+const activitySound=new Audio("activity-change.mp3?v=8.0.0");
+const personalSound=new Audio("personal-alarm.mp3?v=8.0.0");
 let personalDuration=300,personalRemaining=300,personalRunning=false,lastFrame=0;
 
 function load(){try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch{return {...defaults}}}

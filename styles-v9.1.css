@@ -1,0 +1,75 @@
+:root{--ink:#34475a;--line:rgba(90,125,150,.22);--shadow:0 1.4vmin 3vmin rgba(70,105,130,.16)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;color:var(--ink)}
+body{min-height:100svh;background:linear-gradient(rgba(225,246,255,.42),rgba(248,252,255,.48)),url("background.webp?v=9.0.0") center/cover fixed;overflow:hidden}
+button,input,select{font:inherit}button{cursor:pointer}.app{min-height:100svh;padding:1.7vmin;display:grid;grid-template-rows:auto 1fr;gap:1.3vmin}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.7vmin 1vmin}.brand{display:flex;align-items:center;gap:1vmin}.brand>span{font-size:3.4vmin}.brand h1{margin:0;font-size:2.6vmin}.brand p{margin:.2vmin 0 0;font-size:1.35vmin;font-weight:700;color:#718293}
+.actions{display:flex;align-items:center;gap:.7vmin}.actions button,.clock{border:1px solid var(--line);background:rgba(255,255,255,.65);border-radius:1.3vmin;box-shadow:0 .4vmin 1.2vmin rgba(60,90,110,.1)}.actions button{width:4.3vmin;height:4.3vmin;font-size:2vmin}.clock{padding:.65vmin 1.2vmin;font-size:2vmin;font-weight:950}
+.board{min-height:0;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr);grid-template-rows:minmax(0,1.18fr) minmax(0,.82fr);grid-template-areas:"current next" "current personal";gap:1.5vmin;transition:grid-template-columns .65s ease}
+.board.attention-mode{grid-template-areas:"next current" "next personal"}
+.current-card{grid-area:current}.next-card{grid-area:next}.personal-card{grid-area:personal}
+.card{position:relative;min-height:0;border:1px solid var(--line);border-radius:3vmin;box-shadow:var(--shadow);backdrop-filter:blur(10px);overflow:hidden;transition:transform .55s ease,background .55s ease}
+.card:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 8% 15%,rgba(255,205,215,.36) 0 .5vmin,transparent .58vmin),radial-gradient(circle at 92% 15%,rgba(178,224,246,.35) 0 .55vmin,transparent .64vmin),radial-gradient(circle at 10% 87%,rgba(255,225,135,.30) 0 .48vmin,transparent .57vmin),radial-gradient(circle at 91% 86%,rgba(188,232,199,.28) 0 .5vmin,transparent .59vmin)}.card>*{position:relative;z-index:1}
+.current-card,.next-card{background:rgba(255,255,255,.58);padding:1.8vmin;display:grid;grid-template-rows:auto 1fr}.next-card{grid-template-rows:auto 1fr auto}.personal-card{background:rgba(242,238,255,.63);padding:1.8vmin;display:grid;grid-template-rows:auto 1fr}
+.board.attention-mode .next-card{background:rgba(255,250,245,.78)}
+.title{display:flex;align-items:center;gap:.7vmin}.title h2{margin:0;font-size:2.4vmin}.dot{width:1.2vmin;height:1.2vmin;border-radius:50%}.blue{background:#69b8e8}.orange{background:#ff9d76}.purple{background:#9886e3}
+.current-body{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(17vmin,.7fr);align-items:center;gap:2vmin;padding:1vmin}.current-info{text-align:center}.current-name{font-size:4vmin;font-weight:950;line-height:1.2}.message{margin-top:1.3vmin;padding:1vmin 1.4vmin;border-radius:999px;background:rgba(255,255,255,.64);font-size:2vmin;font-weight:850;color:#5f7180}
+.activity-button{position:relative;border:0;background:transparent;padding:0;min-width:0;min-height:0;color:inherit;border-radius:2vmin}.activity-button:focus-visible{outline:.45vmin solid rgba(61,155,207,.45);outline-offset:.3vmin}.current-activity-button{width:100%;height:100%}.current-img,.next-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 .8vmin 1vmin rgba(60,80,90,.12))}.current-img{max-height:66vh}.edit-hint{position:absolute;right:.7vmin;bottom:.7vmin;padding:.45vmin .8vmin;border-radius:999px;background:rgba(52,71,90,.66);color:white;font-size:1.2vmin;font-weight:900;opacity:0;transition:opacity .2s ease}.activity-button:hover .edit-hint,.activity-button:focus-visible .edit-hint{opacity:1}
+.next-body{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(15vmin,.8fr);align-items:center;gap:1.3vmin;padding-top:1vmin}.next-activity{height:100%;display:grid;grid-template-rows:1fr auto;place-items:center;text-align:center}.next-img{max-height:27vh}.next-name{font-size:2.7vmin;font-weight:950}.next-placeholder{align-self:center;padding:1.5vmin;border:2px dashed rgba(90,125,150,.3);border-radius:1.6vmin;font-size:2.2vmin;font-weight:900;color:#7a8b99;background:rgba(255,255,255,.44)}
+.visual-timer,.personal-timer{position:relative;width:100%;max-width:21vmin;aspect-ratio:1;margin:auto}.visual-timer svg,.personal-timer svg{width:100%;height:100%;transform:rotate(-90deg)}.track{fill:none;stroke:rgba(100,125,145,.15);stroke-width:12}.progress,.personal-progress{fill:none;stroke:#ff7f6e;stroke-width:12;stroke-linecap:round;stroke-dasharray:314.159;stroke-dashoffset:314.159;transition:stroke-dashoffset .35s linear}.personal-progress{stroke:#8f7de0}.timer-center,.personal-text{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.timer-center div{font-size:2.7vmin;font-weight:950}.timer-center small{font-size:1.3vmin;font-weight:800;color:#718293}.count-title{text-align:center;font-size:1.5vmin;font-weight:850;color:#718293}
+.personal-body{min-height:0;display:grid;grid-template-columns:minmax(13vmin,.7fr) minmax(0,1.3fr);align-items:center;gap:1.4vmin}.personal-text{font-size:2.8vmin;font-weight:950}.personal-controls{display:grid;gap:1.1vmin}.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:.65vmin}.controls{display:grid;grid-template-columns:1fr 1fr;gap:.8vmin}.presets button,.controls button{border:0;border-radius:1.1vmin;padding:1vmin;font-weight:900;background:rgba(255,255,255,.74);color:#5e5877}.controls .primary{background:#8f7de0;color:white}
+.board.attention-mode .next-body{grid-template-columns:minmax(0,1.2fr) minmax(18vmin,.8fr)}.board.attention-mode .next-img{max-height:62vh}.board.attention-mode .next-name{font-size:4vmin}.board.attention-mode .next-placeholder{font-size:3vmin}.board.attention-mode .current-body{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:.5vmin}.board.attention-mode .current-img{max-height:25vh}.board.attention-mode .current-name{font-size:2.5vmin}.board.attention-mode .message{font-size:1.45vmin;margin-top:.6vmin}.board.attention-mode .visual-timer{max-width:25vmin}.board.attention-mode .timer-center div{font-size:3.2vmin}
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(45,60,75,.46);display:grid;place-items:center;backdrop-filter:blur(8px)}.overlay[hidden]{display:none}.overlay-card{width:min(72vw,760px);max-height:82vh;padding:3vmin;border-radius:3vmin;background:rgba(255,255,255,.95);text-align:center;box-shadow:0 3vmin 8vmin rgba(30,50,65,.28)}.overlay-title{font-size:4vmin;font-weight:950;color:#ed6b60}.overlay-card img{width:100%;max-height:52vh;object-fit:contain}.overlay-name{font-size:4.2vmin;font-weight:950}
+dialog{width:min(92vw,560px);border:0;border-radius:24px;padding:0;background:rgba(255,255,255,.97);box-shadow:0 30px 90px rgba(40,60,80,.28)}dialog::backdrop{background:rgba(40,55,70,.38);backdrop-filter:blur(5px)}form{padding:22px;display:grid;gap:14px}.dialog-head{display:flex;align-items:center;justify-content:space-between}.dialog-head h2{margin:0}.dialog-head button{border:0;background:transparent;font-size:28px}label{display:grid;gap:7px;font-weight:850}select,input[type=time]{width:100%;border:1px solid #cfdde7;border-radius:12px;padding:11px;background:#fff}.sound-test{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:#edf7fc;border-radius:12px;font-weight:900}.sound-test button,.save{border:0;border-radius:11px;padding:10px 14px;font-weight:900;color:#fff}.sound-test button{background:#2d90ca}.save{background:#3d9bcf;font-size:17px}
+@media(orientation:portrait){body{overflow:auto}.app{min-height:auto}.board,.board.attention-mode{grid-template-columns:1fr;grid-template-rows:minmax(54vh,auto) minmax(38vh,auto) minmax(30vh,auto);grid-template-areas:"current" "next" "personal"}.brand h1{font-size:4.2vw}.brand p{font-size:2.6vw}.actions button{width:8.8vw;height:8.8vw;font-size:4vw}.clock{font-size:3.6vw}.title h2{font-size:4.2vw}.current-body,.board.attention-mode .current-body{grid-template-columns:1fr;grid-template-rows:1fr auto}.current-img,.board.attention-mode .current-img{max-height:38vh}.current-name,.board.attention-mode .current-name{font-size:6vw}.message,.board.attention-mode .message{font-size:3.5vw}.next-name,.board.attention-mode .next-name{font-size:4.3vw}.count-title{font-size:2.8vw}.timer-center div,.personal-text{font-size:4.6vw}.board.attention-mode .next-img{max-height:35vh}}
+
+/* V9.1: ビジュアルタイマー作動時の明確なレイアウト切り替え */
+.board.attention-mode{
+  grid-template-columns:minmax(0,1.5fr) minmax(22vmin,.7fr);
+  grid-template-rows:minmax(0,1fr) minmax(0,.72fr);
+  grid-template-areas:"next current" "next personal";
+}
+.board.attention-mode .next-card{
+  grid-column:1;
+  grid-row:1 / span 2;
+  z-index:2;
+}
+.board.attention-mode .current-card{
+  grid-column:2;
+  grid-row:1;
+}
+.board.attention-mode .personal-card{
+  grid-column:2;
+  grid-row:2;
+}
+.board.attention-mode .next-body{
+  grid-template-columns:minmax(0,1fr) minmax(26vmin,.9fr);
+  gap:2vmin;
+}
+.board.attention-mode .visual-timer{
+  max-width:32vmin;
+}
+.board.attention-mode .timer-center div{
+  font-size:4.2vmin;
+}
+.board.attention-mode .timer-center small{
+  font-size:1.7vmin;
+}
+.board.attention-mode .progress{
+  stroke-width:14;
+}
+.board.attention-mode .track{
+  stroke-width:14;
+}
+
+.next-footer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:1vmin}
+.manual-transition{border:0;border-radius:1.2vmin;padding:1vmin 1.4vmin;background:#ff8a72;color:#fff;font-weight:950;box-shadow:0 .5vmin 1.2vmin rgba(150,85,70,.18)}
+.manual-transition:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.board.attention-mode .manual-transition{font-size:1.8vmin;padding:1.2vmin 1.7vmin}
+
+@media(orientation:portrait){
+  .board.attention-mode{grid-template-columns:1fr;grid-template-rows:minmax(54vh,auto) minmax(38vh,auto) minmax(30vh,auto);grid-template-areas:"current" "next" "personal"}
+  .board.attention-mode .next-card,.board.attention-mode .current-card,.board.attention-mode .personal-card{grid-column:auto;grid-row:auto}
+  .board.attention-mode .visual-timer{max-width:42vw}
+  .next-footer{grid-template-columns:1fr}
+  .manual-transition{font-size:3.5vw}
+}
